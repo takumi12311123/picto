@@ -1,0 +1,220 @@
+<html>
+  <head>
+    <title>AwayFrom Picto(JavaScript)</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1"
+    />
+    <script>
+      let list = [3, 1, 4, 3, 1, 2];
+      let numOfHouse = 0;
+      let count = 1;
+      for (const [index, num] of list.entries()) {
+        if (index % 2 === 0) {
+          numOfHouse += num;
+        } else {
+          numOfHouse -= num;
+        }
+      }
+
+      let House = function () {
+        this.image = new Image();
+        this.image.style.position = "fixed";
+      };
+
+      let Human = function () {
+        // Human のコンストラクタ関数
+        this.image = new Image();
+        this.image.style.position = "fixed";
+      };
+
+      let PlayerHouse = function () {
+        House.apply(this, arguments);
+        this.x = window.innerWidth / 2 - 200;
+        this.y = window.innerHeight / 2 - 200;
+        this.image.src = "house2.png";
+      };
+
+      let Player = function () {
+        // Player のコンストラクタ関数
+        Human.apply(this, arguments);
+        this.x = 10;
+        this.y = 45;
+        this.image.src = "humanpicto.png";
+      };
+
+      let Enemy = function () {
+        // Enemy のコンストラクタ関数
+        Human.apply(this, arguments);
+        this.x = 0;
+        this.y = window.innerHeight / 2;
+        this.dx = 0;
+        this.image.src = "humanpicto.png";
+      };
+
+      Player.prototype = new Human();
+      Enemy.prototype = new Human();
+      PlayerHouse.prototype = new House();
+
+      Player.prototype.update = function () {
+        this.image.style.left = this.x + "px";
+        this.image.style.top = this.y + "px";
+      };
+
+      PlayerHouse.prototype.update = function () {
+        this.image.style.left = this.x + "px";
+        this.image.style.top = this.y + "px";
+      };
+
+      Enemy.prototype.update = function () {
+        this.x = this.x + this.dx;
+        this.dx = 1;
+        if (this.x > window.innerWidth / 2) {
+          this.x = window.innerWidth / 2;
+          clearInterval(updateVal);
+          moveTimer = 0;
+          moveVal = setInterval(move, 10);
+        }
+        this.image.style.left = this.x + "px";
+        this.image.style.top = this.y + "px";
+      };
+
+      Enemy.prototype.move = function () {
+        this.x = this.x + this.dx;
+        this.dx = 1;
+        this.image.style.left = this.x + "px";
+        this.image.style.top = this.y + "px";
+        if (this.x > window.innerWidth) {
+          clearInterval(moveVal);
+          count += 3;
+          timer = 0;
+          updateVal = setInterval(update, 10);
+          if (count > 6) {
+            clearInterval(updateVal);
+            clearInterval(moveVal);
+          }
+        }
+      };
+
+      // Enemy.prototype.changeX = function (number) {
+      //   this.x = -1 - counter;
+      //   counter += 1;
+      // };
+
+      Enemy.prototype.position = function () {
+        this.x = 0;
+        this.y = window.innerHeight / 2;
+        this.image.style.left = this.x + "px";
+        this.image.style.top = this.y + "px";
+      };
+
+      let player;
+      let house;
+      let enemy = new Array(20);
+      let counter = 0;
+
+      window.onload = function () {
+        // ブラウザにコンテンツがロードされたときに1度だけ呼ばれる関数
+        player = new Player();
+        house = new PlayerHouse();
+        player.update();
+        house.update();
+        for (let i = 0; i < enemy.length; i++) {
+          enemy[i] = new Enemy();
+          enemy[i].position();
+        }
+
+        document.body.appendChild(player.image);
+        document.body.appendChild(house.image);
+        for (let i = 0; i < enemy.length; i++) {
+          document.body.appendChild(enemy[i].image);
+        }
+      };
+
+      let timer = 0;
+      let moveTimer = 0;
+
+      let update = function () {
+        if (timer < 30) {
+          for (let i = 1 + count; i < 1 + count; i++) {
+            enemy[i].update();
+          }
+        }
+        if (timer >= 30 && timer < 60) {
+          for (let i = 1 + count; i < 2 + count; i++) {
+            enemy[i].update();
+          }
+        }
+        if (timer >= 60 && timer < 90) {
+          for (let i = 1 + count; i < 3 + count; i++) {
+            enemy[i].update();
+          }
+        }
+        if (timer >= 90 && timer < 120) {
+          for (let i = 1 + count; i < 4 + count; i++) {
+            enemy[i].update();
+          }
+        } else {
+          for (let i = 1 + count; i < 5 + count; i++) {
+            enemy[i].update();
+          }
+        }
+        timer = timer + 1;
+      };
+
+      let move = function () {
+        // 画像表示のアップデート
+        if (moveTimer < 30) {
+          for (let i = 1 + count; i < 1 + count; i++) {
+            enemy[i].move();
+          }
+        }
+        if (moveTimer >= 30 && moveTimer < 60) {
+          for (let i = 1 + count; i < 2 + count; i++) {
+            enemy[i].move();
+          }
+        }
+        if (moveTimer >= 60 && moveTimer < 90) {
+          for (let i = 1 + count; i < 3 + count; i++) {
+            enemy[i].move();
+          }
+        } else {
+          for (let i = 1 + count; i < 4 + count; i++) {
+            enemy[i].move();
+          }
+        }
+        moveTimer = moveTimer + 1;
+      };
+
+      updateVal = setInterval(update, 10); // 関数updateを10msごとに呼び出す．
+
+      function speak(sentence) {
+        var ssu = new SpeechSynthesisUtterance();
+        ssu.volume = 1;
+        ssu.rate = 1;
+        ssu.pitch = 1;
+        ssu.text = sentence;
+        ssu.lang = "ja-JP"; // ssu.lang = 'en-US'; // 英語を話させたいときはこちら
+        speechSynthesis.speak(ssu);
+      }
+
+      function done() {
+        const answer = document.getElementById("input-id-1").value;
+        // console.log(answer);
+        if (answer) {
+          // TODO ここに画面を全部消して、家族連れにする
+          house.image.src = "housewithfamily.png";
+          for (let i = 0; i < enemy.length; i++) {
+            enemy[i].image.src = "";
+          }
+          speak("なんでやねん");
+        }
+      }
+    </script>
+  </head>
+  <body bgcolor="white">
+    <input id="input-id-1" />
+    <button onclick="done()">回答</button>
+  </body>
+</html>
